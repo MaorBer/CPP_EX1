@@ -1,10 +1,10 @@
 #include <iostream>
 #include "Graph.hpp"
-#include "Algorithms.hpp"
 #include <queue>
 #include <stack>
 #include <limits>
 #include <stdexcept>
+#include "Algorithms.hpp"
 #include <climits>
 #include <algorithm>
 #include <unordered_set>
@@ -207,6 +207,7 @@ string Algorithms:: isBipartite(Graph g)  {
 
 
     
+
 
 
 
