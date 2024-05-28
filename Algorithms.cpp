@@ -1,214 +1,246 @@
+// 214695108 shakedshvartz2004@gmail.com
 #include <iostream>
 #include "Graph.hpp"
-#include <queue>
+#include "Algorithms.hpp"
 #include <stack>
+#include <climits>
 #include <limits>
 #include <stdexcept>
-#include "Algorithms.hpp"
-#include <climits>
-#include <algorithm>
-#include <unordered_set>
-#include <sstream>
-using namespace ariel;
+#include <queue>
+#include <vector>
+#include <string>
+#include <stdint.h>
+
 using namespace std;
-bool Algorithms :: isConnected( Graph g){
-    std::vector<bool> v=BFS(0,g);
-    for( size_t i=0 ; i< g.getMatrix().size();i++){
-        if (v[i]== false) return false;
-    }
-    return true ;
-}
-bool containsNumber(const std::stack<size_t>& stack, int target) {
-    
-    std::stack<size_t> temp = stack; 
-    while (!temp.empty()) {
-        if (temp.top() == target) {
-            return true; 
-        }
-        temp.pop(); 
-    }
-    return false; 
-}
-  std::vector<bool> Algorithms :: BFS (size_t startVertex , Graph n) {
-        std::vector<bool> visited(n.getMatrix().size(), false);
-        std::queue<size_t> stuck;
-        visited[startVertex] = true;
-        stuck.push(startVertex);
-        std::vector<int> visitedINT(n.getMatrix().size(), 0);
-        while (!stuck.empty()) {
-            size_t currentVertex = stuck.front();
-            stuck.pop();
-            for (size_t i = 0; i < n.getMatrix().size(); i++) {
-                if (n.getMatrix()[currentVertex][i] ) {
-                    visitedINT[i]++;
-                    if( visited[i]== false){
-                    visited[i] = true;
-                    stuck.push(i);}
+using namespace ariel;
+
+void Algorithms::bellman_ford(Graph g, size_t start, vector<int> &d, vector<int> &pi)
+{
+    d[start] = 0;
+    for (size_t i = 0; i < g.get_ver() - 1; i++)
+    {
+        for (size_t j = 0; j < g.get_ver(); j++)
+        {
+            for (size_t k = 0; k < g.get_ver(); k++)
+            {
+                if (g.weight(j, k) != 0 && d[j] != INT32_MAX && d[k] > d[j] + g.weight(j, k))
+                {
+                    d[k] = d[j] + g.weight(j, k);
+                    pi[k] = j;
                 }
             }
         }
-        
-        return visited ;
     }
-bool Algorithms :: isContainsCycle(Graph g ){
-    std::vector<bool> visited(g.getMatrix().size(), false);
-    std:: stack <size_t> stuck ;
-    visited[0] = true;
-    stuck.push(0);
-    bool iscontains =true;
-    // dfs
-    while (!stuck.empty()) {
-        size_t currentVertex = stuck.top();
-        stuck.pop();
-            for (size_t i = 0; i < g.getMatrix().size(); i++) {
-                if (g.getMatrix()[currentVertex][i] != 0) {
-                    if( !visited[i]){
-                    visited[i] = true;
-                    stuck.push(i);}
-                    // based on the dfs algorithem 
-                    else{
-                        if (containsNumber(stuck,i)) return true;
+    for (size_t i = 0; i < g.get_ver(); i++)
+    {
+        for (size_t j = 0; j < g.get_ver(); j++)
+        {
+            if (g.weight(i, j) != 0 && d[i] != INT32_MAX && (d[j] > d[i] + g.weight(i, j) || d[i] == INT32_MIN))
+            {
+                d[j] = INT32_MIN;
+                pi[j] = i;
+            }
+        }
+    }
+}
+
+bool Algorithms::isConnected(Graph g)
+{
+    for (size_t s = 0; s < g.get_ver(); s++)
+    {
+        vector<int> d(g.get_ver(), INT32_MAX);
+        vector<int> pi(g.get_ver(), -1);
+        bellman_ford(g, s, d, pi);
+        for (size_t i = 0; i < g.get_ver(); i++)
+        {
+            if (d[i] == INT32_MAX)
+                return false; 
+        }
+    }
+    return true;
+}
+
+std::string Algorithms::shortestPath(Graph g, size_t src, size_t dest)
+{
+    string str = "";
+    str += std::to_string(dest);
+    vector<int> d(g.get_ver(), INT32_MAX);
+    std::vector<int> pi(g.get_ver(), -1);
+    bellman_ford(g, src, d, pi);
+    if (d[dest] == INT32_MIN)
+    {
+        return "There is a negative cycle"; 
+    }
+    if (pi[dest] == -1)
+    {
+        str = std::to_string(-1) + " :(there is no path between " + std::to_string(src) + " to " + std::to_string(dest) + ")";
+        return str;
+    }
+    int t = (int)dest;
+    while (t != src)
+    {
+        str = std::to_string(pi[(size_t)t]) + "-->" + str;
+        t = pi[(size_t)t];             
+    }
+    return str;
+}
+
+size_t Algorithms::dfs_v(Graph g, size_t u, std::vector<size_t> &pi, std::vector<int> &colors)
+{
+    colors[u] = 1;
+    for (size_t j = 0; j < g.get_ver(); j++)
+    {
+        if (g.weight(u, j) == 0)
+        {
+            continue;
+        }
+        if (colors[j] == 0)
+        {
+            pi[j] = u;
+            size_t res = dfs_v(g, j, pi, colors);
+            if (res != SIZE_MAX)
+            {
+                return res;
+            }
+        }
+        else if (colors[j] == 1 && j != u)
+        {
+            pi[j] = u;
+            return j;
+        }
+    }
+
+    colors[u] = 2; 
+    return SIZE_MAX;
+}
+
+string Algorithms::isContainsCycle(Graph g)
+{
+    string str = "No cycles";
+    vector<int> colors(g.get_ver(), 0);
+    vector<size_t> pi(g.get_ver(), SIZE_MAX);
+    for (size_t i = 0; i < g.get_ver(); i++)
+    {
+        if (colors[i] == 0)
+        {
+            size_t s = dfs_v(g, i, pi, colors);
+            if (s != SIZE_MAX)
+            {
+                str = std::to_string(s);
+                size_t parent = pi[s];
+                while (parent != s)
+                {
+                    str = std::to_string(parent) + "-->" + str;
+                    parent = pi[parent];
+                }
+                str = std::to_string(s) + "-->" + str;
+                return "The cycle is:" + str;
+            }
+        }
+    }
+    return str;
+}
+
+bool Algorithms::dfs_c(Graph g, size_t u, vector<int> &colors)
+{
+    for (size_t j = 0; j < g.get_ver(); j++)
+    {
+        if (g.weight(u, j) == 0)
+        {
+            continue;
+        }
+        if (colors[j] == 0)
+        {
+            colors[j] = 3 - colors[u];
+            bool res = dfs_c(g, j, colors);
+            if (!res)
+            {
+                return res;
+            }
+        }
+        else if (colors[j] == colors[u] && j != u)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::string Algorithms::isBipartite(Graph g)
+{
+    vector<int> colors(g.get_ver(), 0);
+    for (size_t i = 0; i < g.get_ver(); i++)
+    {
+        if (colors[i] != 0)
+        {
+            continue;
+        }
+        for (size_t j = 0; j < g.get_ver(); j++)
+        {
+            if (colors[j] != 0 && (g.weight(i, j) != 0 || g.weight(j, i) != 0) && i != j)
+            {
+                colors[i] = 3 - colors[j];
+                break;
+            }
+        }
+        if (colors[i] == 0)
+        {
+            colors[i] = 1;
+        }
+        bool b = dfs_c(g, i, colors);
+        if (!b)
+        {
+            return "The graph isn't bipartite";
+        }
+    }
+    string s1 = "{";
+    string s2 = "{";
+    for (size_t i = 0; i < g.get_ver(); i++)
+    {
+        if (colors[i] == 1)
+        {
+            s1 += std::to_string(i) + " ";
+        }
+        else
+        {
+            s2 += std::to_string(i) + " ";
+        }
+    }
+    s1 += "}";
+    s2 += "}";
+    return s1 + " " + s2;
+}
+
+string Algorithms::negativeCycle(Graph g)
+{
+    string str = "There isn't a negative cycle";
+    vector<size_t> points;
+    for (size_t s = 0; s < g.get_ver(); s++)
+    {
+        vector<int> d(g.get_ver(), INT32_MAX);
+        vector<int> pi(g.get_ver(), -1);
+        bellman_ford(g, s, d, pi);
+        if (d[s] < 0)
+        {
+            str = "";
+            points.push_back(s);
+            for (size_t t = 0; t < points.size(); t++)
+            {
+                if (pi[s] == points[t])
+                {
+                    for (size_t k = 1; k < points.size(); k++)
+                    {
+                        str += std::to_string(points[k]) + ", ";
                     }
+                    str += std::to_string(points[0]);
+                    return str;
                 }
-            }
-        if (stuck.empty()){
-            for (size_t i=0; i<visited.size();i++){
-                if (visited[i]==false) {
-                    stuck.push(i);
-                    break ;} 
-            }
-        }
-        }
-    
-        return false ;
-        
-}
-
-    string Algorithms::shortestPath(Graph g, size_t source, size_t destination) {
-        // Number of vertices in the graph
-        size_t V = g.getMatrix().size();
-        
-        // Initialize distances to all vertices as infinite and source distance as 0
-        vector<int> dist(V, numeric_limits<int>::max());
-        dist[source] = 0;
-
-        // Array to store the parent vertices for path reconstruction
-        vector<int> parent(V, -1);
-
-        // Relax all edges |V| - 1 times
-        for (size_t i = 0; i < V - 1; ++i) {
-            for (const auto& edge : g.getEdges()) {
-                size_t u = edge.first;
-                size_t v = edge.second;
-                int weight = g.getMatrix()[u][v];
-                if (dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-                    dist[v] = dist[u] + weight;
-                    parent[v] = u;
-                }
-            }
-        }
-        if (dist[destination] >10000) return "-1";// checking if it didnt reached to the vertex
-        // Check for negative-weight cycles
-        for (const auto& edge : g.getEdges()) {
-            size_t u = edge.first;
-            size_t v = edge.second;
-            int weight = g.getMatrix()[u][v];
-            if (dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-                return "Graph contains negative weight cycle!";
-            }
-        }
-
-        // Construct the shortest path from source to destination
-        stringstream ss;
-        ss << destination;
-        size_t current = destination;
-        while (parent[current] != -1) {
-            ss << ">-" << parent[current];
-            current = (size_t) parent[current];
-        }
-        
-        string path = ss.str();
-        reverse(path.begin(), path.end());
-
-        return  path;
-    }
-bool Algorithms :: isNegativeCycle(Graph g){
-    size_t v=0;
-    size_t s= g.getMatrix().size()-1;
-    string final = shortestPath(g,v,s);
-    if (final == "Graph contains negative weight cycle!"){
-        return true ;
-    }
-    return false;
-}
-string Algorithms:: isBipartite(Graph g)  {
-    size_t V = g.getMatrix().size();
-    vector<int> color(V, -1);
-
-    // Queue for BFS
-    queue<size_t> q;
-
-    // Start BFS from any vertex
-    for (size_t i = 0; i < V; ++i) {
-        if (color[i] == -1) {
-            q.push(i);
-            color[i] = 0;
-
-            while (!q.empty()) {
-                size_t u = q.front();
-                q.pop();
-
-                for (size_t v = 0; v < V; ++v) {
-                    // An edge exists and destination is not colored
-                    if (g.getMatrix()[u][v] && color[v] == -1) {
-                        color[v] = 1 - color[u]; // Color opposite to u
-                        q.push(v);
-                    }
-                    // An edge exists and destination has the same color as source
-                    else if (g.getMatrix()[u][v] && color[v] == color[u]) {
-                        return "0";
-                    }
+                else
+                {
+                    points.push_back(t);
                 }
             }
         }
     }
-
-    // If we reach here, then all adjacent vertices can be colored with different colors
-    // So, the graph is bipartite
-    vector<int> A, B;
-    for (size_t i = 0; i < V; ++i) {
-        if (color[i] == 0) {
-            A.push_back(i);
-        } else {
-            B.push_back(i);
-        }
-    }
-
-    // Prepare the result string
-    string result = "The graph is bipartite: A={";
-    for (size_t i = 0; i < A.size(); ++i) {
-        result += to_string(A[i]);
-        if (i < A.size() - 1) {
-            result += ", ";
-        }
-    }
-    result += "}, B={";
-    for (size_t i = 0; i < B.size(); ++i) {
-        result += to_string(B[i]);
-        if (i < B.size() - 1) {
-            result += ", ";
-        }
-    }
-    result += "}";
-
-    return result;
+    return str;
 }
-
-
-
-    
-
-
-
-
-

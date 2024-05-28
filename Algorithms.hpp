@@ -1,19 +1,23 @@
-// #ifndef ALGORITHMS_HPP
+// 214695108 shakedshvartz2004@gmail.com
+#ifndef ALGORITHMS_HPP
 #define ALGORITHMS_HPP
-
-#include "Graph.hpp"
+#include <iostream>
 #include <vector>
-#include <string>
+#include "Graph.hpp"
 
-using namespace std;
-namespace ariel{
-    class Algorithms{
-        public:
-        static bool isConnected (Graph g);
-        static std::vector<bool> BFS(size_t startVertex , Graph n);
-        static bool isContainsCycle(Graph g);
-        static string shortestPath(Graph g, size_t h, size_t s);
-        static bool isNegativeCycle(Graph g);
-        static string  isBipartite(Graph g);
+namespace ariel
+{
+    class Algorithms
+    {
+    public:
+        static void bellman_ford(Graph g, size_t start, std::vector<int> &d, std::vector<int> &pi);
+        static size_t dfs_v(Graph g, size_t u, std::vector<size_t>& pi, std::vector<int>& colors);
+        static bool dfs_c(Graph g, size_t u, std::vector<int>& colors);
+        static bool isConnected(Graph g);
+        static std::string shortestPath(Graph g, size_t src, size_t dest);
+        static string isContainsCycle(Graph g);
+        static std::string isBipartite(Graph g);
+        static std::string negativeCycle(Graph g);
     };
-    }
+}
+#endif
