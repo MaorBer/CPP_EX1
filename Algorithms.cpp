@@ -116,7 +116,7 @@ size_t Algorithms::dfs_v(Graph g, size_t u, std::vector<size_t> &pi, std::vector
 
 string Algorithms::isContainsCycle(Graph g)
 {
-    string str = "No cycles";
+    string str = "0";
     vector<int> colors(g.get_ver(), 0);
     vector<size_t> pi(g.get_ver(), SIZE_MAX);
     for (size_t i = 0; i < g.get_ver(); i++)
