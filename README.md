@@ -1,4 +1,4 @@
-# Graph Algorithms Project
+# Graph Algorithms Project OS_2 Course
 
 ## Overview
 
