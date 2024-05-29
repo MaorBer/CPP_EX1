@@ -8,11 +8,6 @@ using namespace std;
 using namespace ariel;
 
 
-
-
-
-
-
 void Graph::loadGraph(std::vector<std::vector<int>> graph)
 {
     if (graph.empty())

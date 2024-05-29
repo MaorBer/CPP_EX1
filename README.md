@@ -1,4 +1,4 @@
-# Graph Algorithms Project
+# Graph Algorithms Project SP_2 Course EX1
 
 ## Overview
 
