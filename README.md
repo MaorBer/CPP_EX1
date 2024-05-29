@@ -86,6 +86,48 @@ This source file provides the implementation of the methods declared in `Algorit
 
 ## Compilation
 
-Use the following command to compile the project:
-```sh
-g++ -o graph_algorithms Graph.cpp Algorithms.cpp -std=c++11
+The project includes a `Makefile` for easy compilation. Use the following commands to compile and run the project:
+
+1. **Compile the project:**
+    ```sh
+    make
+    ```
+
+2. **Run the demo:**
+    ```sh
+    make run
+    ```
+
+3. **Run the tests:**
+    ```sh
+    make test
+    ```
+
+4. **Clean the build files:**
+    ```sh
+    make clean
+    ```
+
+5. **Run Valgrind for memory checking:**
+    ```sh
+    make valgrind
+    ```
+
+## Makefile
+
+The `Makefile` includes the following targets:
+
+- `run`: Compiles and runs the demo.
+- `demo`: Compiles the demo executable.
+- `test`: Compiles and runs the tests.
+- `tidy`: Runs `clang-tidy` with specific checks.
+- `valgrind`: Runs `valgrind` to check for memory leaks.
+- `clean`: Removes all compiled files.
+
+## Author
+
+- Maor Berenstein
+- ID: 212305965
+- Email: maorw9@gmail.com
+
+
