@@ -30,9 +30,9 @@ int main()
 
     // 5x5 matrix that represents a non-connected graph with a cycle.
     vector<vector<int>> graph2 = {
-        {0, 1, 1, 0, 0},
-        {1, 0, 1, 0, 0},
-        {1, 1, 0, 1, 0},
+        {0, 0, 0, 0, 0},
+        {1, 0, 0, 0, 0},
+        {1, 1, 0, 0, 0},
         {0, 0, 1, 0, 0},
         {0, 0, 0, 0, 0}};
 

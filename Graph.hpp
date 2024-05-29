@@ -20,6 +20,8 @@ namespace ariel
             void printGraph();
             int weight(size_t s, size_t t);
             size_t get_ver();
+            bool isSymmetrical(); // If the Graph isSymmetrical then it is an undirected Graph 
+
     };
 }
 
