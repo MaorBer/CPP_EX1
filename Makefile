@@ -1,15 +1,16 @@
 #  ID: 212305965
 #  Email: maorw9@gmail.com
 
-CXX= g++
+
+CXX=g++
 CXXFLAGS=-std=c++11 -Werror -Wsign-conversion
-VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
+VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all --error-exitcode=99
 
 SOURCES=Graph.cpp Algorithms.cpp TestCounter.cpp Test.cpp
 OBJECTS=$(subst .cpp,.o,$(SOURCES))
 
-run: test  # I run test as demo is for demonstration.
-	./$^
+run: test
+	./test
 
 demo: Demo.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o demo

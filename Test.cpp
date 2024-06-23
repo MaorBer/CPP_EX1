@@ -1,3 +1,6 @@
+// ID: 212305965
+// Email: maorw9@gmail.com
+
 #include "doctest.h"
 #include "Algorithms.hpp"
 #include "Graph.hpp"
@@ -430,4 +433,3 @@ TEST_CASE("Test isBipartite with disconnected graph")
     g.loadGraph(graph2);
     CHECK(ariel::Algorithms::isBipartite(g) == "The graph isn't bipartite");
 }
-
